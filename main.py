@@ -7,16 +7,13 @@ class Student:
         self.courses_in_progress = []
         self.grades = {}
 
-        # def add_courses(self, course_name):
-        #     self.finished_courses.append(course_name)
-
-    def rate_lecturer(self, lecturer, course, grade):
+    def rate_lecturer(self, lecturer, course, rate):
         if isinstance(lecturer,
                       Lecturer) and course in self.courses_in_progress and course in lecturer.courses_attached:
             if course in lecturer.rates:
-                lecturer.rates[course] += [grade]
+                lecturer.rates[course] += [rate]
             else:
-                lecturer.rates[course] = [grade]
+                lecturer.rates[course] = [rate]
         else:
             return 'Ошибка'
 
@@ -28,10 +25,10 @@ class Student:
                 course_sum += grade
             course_middle = course_sum / len(course_grades)
             middle_sum += course_middle
-            if middle_sum == 0:
-                return f'Студент еще не получал оценки'
-            else:
-                return f'{middle_sum / len(self.grades.values()):.2f}'
+        if middle_sum == 0:
+            return f'Студент еще не получал оценки'
+        else:
+            return f'{middle_sum / len(self.grades.values()):.2f}'
 
     def __str__(self):
         res = f'Имя: {self.name} \nФамилия: {self.surname} \n'
@@ -40,11 +37,11 @@ class Student:
         res += f'Завершенные курсы: {", ".join(self.finished_courses)}'
         return res
 
-    def __it__(self, student):
-        if isinstance(student, Student):
-            return self.middle_grade() > student.middle_grade()
-        else:
-            return 'Такого студента нет'
+    def __lt__(self, student):
+        if not isinstance(student, Student):
+            print(f'Такого студента нет')
+            return
+        return self.middle_grade() < student.middle_grade()
 
 
 class Mentor:
@@ -74,11 +71,11 @@ class Lecturer(Mentor):
         res += f'Средняя оценка {self.middle_rate()}\n'
         return res
 
-    def __it__(self, lecturer):
-        if isinstance(lecturer, Lecturer):
-            return self.middle_rate() < lecturer.middle_rate()
-        else:
-            return f'Такого лектора нет'
+    def __lt__(self, lecturer):
+        if not isinstance(lecturer, Lecturer):
+            print(f' Такого лектора нет')
+            return
+        return self.middle_rate() < lecturer.middle_rate()
 
 
 class Reviewer(Mentor):
@@ -147,7 +144,7 @@ second_lecturer.courses_attached = ['Python']
 lecturer_list = [first_lecturer, second_lecturer]
 
 first_reviewer = Reviewer('John', 'Bobrovsky')
-first_reviewer.courses_attached = ['Повар', 'Скалолаз', 'Java']
+first_reviewer.courses_attached = ['Повар', 'Скалолаз', 'Java', 'Git']
 
 second_reviewer = Reviewer('Anna', 'Petrovna')
 second_reviewer.courses_attached = ['Git', 'Python', 'Сантехник']
@@ -196,9 +193,9 @@ print(first_student)
 print(second_student)
 
 if first_student > second_student:
-    print(f'{first_student} учится лучше {second_student}')
+    print(f'{first_student.name} учится лучше {second_student.name}')
 else:
-    print(f'{second_student} учится лучше {first_student}')
+    print(f'{second_student.name} учится лучше {first_student.name}')
 
 print(first_reviewer)
 print(second_reviewer)
@@ -207,9 +204,9 @@ print(first_lecturer)
 print(second_lecturer)
 
 if first_lecturer > second_lecturer:
-    print(f'{first_lecturer} преподает лучше {second_lecturer}')
+    print(f'{first_lecturer.name} преподает лучше {second_lecturer.name}')
 else:
-    print(f'{second_lecturer} преподает лучше {first_lecturer}')
+    print(f'{second_lecturer.name} преподает лучше {first_lecturer.name}')
 
 print(f'Средняя оценка студентов по курсу "Git": {grades_students(students_list, "Git")}')
 print(f'Средняя оценка студентов по курсу "Java": {grades_students(students_list, "Java")}')
